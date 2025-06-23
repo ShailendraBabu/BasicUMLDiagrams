@@ -1,0 +1,972 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UML Diagrams for System Design: The Infographic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #073B4C;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 280px;
+            max-height: 320px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 320px;
+                max-height: 380px;
+            }
+        }
+        .kpi-card {
+            background-color: #ffffff;
+            border-left: 5px solid #118AB2;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .flowchart-node {
+            border: 2px solid #118AB2;
+            background-color: #ffffff;
+            color: #073B4C;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .flowchart-arrow {
+            color: #FFD166;
+            font-size: 2rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 1rem;
+            height: 100%;
+            width: 4px;
+            background: #FFD166;
+        }
+        .timeline-item {
+            position: relative;
+            padding-left: 3rem;
+            margin-bottom: 2rem;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 0.25rem;
+            height: 2rem;
+            width: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #FF6B6B;
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            border: 4px solid #f0f4f8;
+            transform: translateX(-50%);
+            margin-left: 2px;
+        }
+        .timeline-content h3 {
+            color: #118AB2;
+        }
+        .uml-actor {
+            width: 60px;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #073B4C;
+        }
+        .uml-actor-head {
+            width: 20px;
+            height: 20px;
+            background-color: #118AB2;
+            border-radius: 50%;
+            margin-bottom: 4px;
+        }
+        .uml-actor-body {
+            width: 2px;
+            height: 30px;
+            background-color: #118AB2;
+            position: relative;
+        }
+        .uml-actor-body::before, .uml-actor-body::after {
+            content: '';
+            position: absolute;
+            background-color: #118AB2;
+        }
+        .uml-actor-body::before {
+            width: 40px;
+            height: 2px;
+            top: 10px;
+            left: -19px;
+        }
+        .uml-actor-body::after {
+            width: 20px;
+            height: 2px;
+            bottom: -5px;
+            left: -9px;
+            transform: rotate(45deg);
+            transform-origin: bottom left;
+        }
+        .uml-actor-body .leg2 {
+             width: 20px;
+            height: 2px;
+            bottom: -5px;
+            right: -9px;
+            transform: rotate(-45deg);
+            transform-origin: bottom right;
+        }
+        .uml-use-case {
+            background-color: #06D6A0;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 9999px;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .uml-class {
+            border: 2px solid #118AB2;
+            background-color: #ffffff;
+            color: #073B4C;
+            border-radius: 0.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            width: 180px;
+            overflow: hidden;
+        }
+        .uml-class-name {
+            background-color: #118AB2;
+            color: white;
+            padding: 0.5rem;
+            font-weight: 700;
+        }
+        .uml-class-attributes, .uml-class-methods {
+            padding: 0.5rem;
+            font-size: 0.875rem;
+            text-align: left;
+        }
+        .uml-class-attributes {
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .uml-class-attribute-item, .uml-class-method-item {
+            display: block;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .uml-lifeline {
+            width: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #073B4C;
+            text-align: center;
+        }
+        .uml-lifeline-box {
+            border: 2px solid #118AB2;
+            background-color: #ffffff;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        .uml-lifeline-dashed {
+            width: 2px;
+            height: 150px;
+            background-image: linear-gradient(to bottom, #118AB2 50%, transparent 50%);
+            background-size: 2px 8px;
+            background-repeat: repeat-y;
+            position: relative;
+        }
+        .uml-activation {
+            position: absolute;
+            left: -5px;
+            width: 12px;
+            background-color: #FF6B6B;
+            min-height: 20px;
+        }
+        .uml-message {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background-color: #FFD166;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .uml-message-arrow {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: 10px solid #FFD166;
+            transform: translateY(-50%);
+        }
+        .uml-node {
+            border: 2px solid #118AB2;
+            background-color: #ffffff;
+            color: #073B4C;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 4px 4px 0px #06D6A0;
+            display: inline-block;
+            vertical-align: top;
+            position: relative;
+        }
+        .uml-artifact {
+            border: 1px dashed #FF6B6B;
+            background-color: #fff;
+            color: #073B4C;
+            padding: 0.5rem;
+            margin-top: 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+        /* Specific styling for the quick tips section */
+        .quick-tips-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1.25rem;
+        }
+        .quick-tips-list li span {
+            margin-right: 1rem;
+            flex-shrink: 0;
+            line-height: 1.5;
+        }
+        .quick-tips-list li p {
+            margin-top: 0;
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+        /* Custom styles for UML diagrams */
+        .diagram-container {
+            border: 2px solid #e2e8f0;
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center items for diagram examples */
+            justify-content: center;
+            overflow-x: auto;
+            text-align: center; /* Center text for diagram examples */
+        }
+        .diagram-button {
+            @apply bg-[#118AB2] hover:bg-[#0e708f] text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors duration-300;
+        }
+        .diagram-button.active {
+            @apply bg-[#06D6A0] hover:bg-[#05a07c] text-black;
+        }
+        .diagram-example-heading {
+            color: #118AB2;
+            margin-bottom: 1rem;
+        }
+        .diagram-explanation {
+            color: #073B4C;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        .diagram-context {
+            color: #4B5563;
+            font-style: italic;
+            margin-top: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Specific styles for embedded diagrams */
+        .embedded-diagram-box {
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            background-color: #f9fafb;
+            display: flex; /* Use flex to center content in some diagrams */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px; /* Ensure diagrams have enough space */
+            width: 100%; /* Take full width within its parent */
+            max-width: 900px; /* Increased max-width for better fit */
+            position: relative; /* For precise positioning of elements */
+            overflow-x: auto; /* Allow horizontal scrolling if content overflows */
+            padding-bottom: 20px; /* Add some padding for scrollbar */
+        }
+
+        /* Class Diagram specific */
+        .class-diagram-example {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3.5rem; /* Increased gap for more breathing room */
+            padding: 1.5rem;
+            position: relative;
+            width: fit-content; /* Allow content to dictate width */
+            min-width: 100%; /* Ensure it takes at least 100% of parent width */
+            height: auto;
+        }
+        .class-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            position: relative;
+            gap: 3rem; /* Increased gap between classes */
+        }
+        .class-box-container {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 10; /* Ensure class box is above lines */
+        }
+        .uml-class {
+            width: 220px; /* Slightly wider for better content fit */
+            min-height: 140px; /* Min height for uniformity */
+            display: flex;
+            flex-direction: column;
+            align-items: stretch; /* Stretch content within class box */
+        }
+        .uml-class-attributes, .uml-class-methods {
+            padding: 0.6rem 0.8rem; /* Adjusted padding */
+            font-size: 0.9rem; /* Slightly larger font */
+            text-align: left;
+            flex-grow: 1;
+        }
+        .uml-class-name {
+            padding: 0.7rem; /* Adjusted padding */
+        }
+
+        .class-horizontal-line {
+            position: absolute;
+            height: 2px;
+            background-color: #118AB2;
+        }
+        .class-arrow-association {
+            width: 0;
+            height: 0;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: 10px solid #118AB2;
+            position: absolute;
+        }
+        .class-vertical-line {
+            width: 2px;
+            background-color: #118AB2;
+            position: absolute;
+        }
+        .class-vertical-arrow {
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 10px solid #118AB2;
+            position: absolute;
+        }
+        .class-multiplicity-label {
+            position: absolute;
+            font-size: 0.75rem; /* Slightly larger font */
+            color: #4B5563;
+            background-color: #f9fafb;
+            padding: 0 3px; /* More padding */
+            z-index: 15; /* Ensure labels are on top */
+        }
+        .class-relation-text {
+            position: absolute;
+            font-size: 0.8rem; /* Slightly larger font */
+            color: #073B4C;
+            background-color: #f9fafb;
+            padding: 0 5px; /* More padding */
+            z-index: 15;
+            white-space: nowrap;
+        }
+
+        /* Use Case Diagram specific (already quite good, minor tweaks) */
+        .use-case-diagram-example {
+            height: 400px; /* Slightly increased height */
+        }
+        .system-boundary-box {
+            padding: 2.5rem; /* Increased padding */
+            left: 180px; /* Adjusted to accommodate actors with more space */
+            right: 180px; /* Adjusted to accommodate actors with more space */
+        }
+        .uc-actor-line.left {
+            left: 80px; /* More space from actor */
+            width: calc(180px - 80px - 10px);
+        }
+        .uc-actor-line.right {
+            right: 80px; /* More space from actor */
+            width: calc(180px - 80px - 10px);
+        }
+
+
+        /* Sequence Diagram specific (already quite good, minor tweaks) */
+        .sequence-diagram-example {
+            height: 450px; /* Slightly increased height */
+            padding-top: 2.5rem;
+        }
+        .seq-message-label-text {
+            top: -1.5rem; /* Adjusted position for more clearance */
+            padding: 0 0.3rem;
+        }
+        .seq-lifeline-group {
+            width: 120px; /* Wider lifelines for more space */
+        }
+        .uml-lifeline-box {
+            width: 110px; /* Wider box */
+        }
+
+        /* Activity Diagram specific (already quite good, minor tweaks) */
+        .activity-diagram-example {
+            gap: 2rem; /* Adjusted gap */
+            height: auto;
+            min-height: 500px; /* More vertical space */
+        }
+        .activity-flow-line {
+            height: 35px; /* Increased line length */
+        }
+        .activity-decision-text {
+            font-size: 0.85rem;
+            padding: 0 5px;
+        }
+        .fork-join-bar {
+            width: 150px; /* Wider bar for clarity */
+            height: 7px; /* Slightly thicker bar */
+            margin: 2rem 0; /* More spacing */
+        }
+        .fork-paths {
+            width: 95%; /* Wider span for paths */
+        }
+        .fork-path-segment {
+            gap: 1rem; /* Gap between actions in a path */
+        }
+
+        /* Component Diagram specific */
+        .component-diagram-example {
+            gap: 6rem; /* Increased gap for more separation */
+            height: 550px; /* Adjusted height for vertical spacing */
+            justify-content: center;
+            width: fit-content; /* Allow content to dictate width */
+            min-width: 100%; /* Ensure it takes at least 100% of parent width */
+        }
+        .component-pair {
+            gap: 6rem; /* Increased gap between components in a pair */
+            width: 100%;
+            max-width: 700px; /* Wider component pairs */
+            justify-content: center; /* Center components within the pair */
+        }
+        .component-box {
+            width: 240px; /* Wider fixed width */
+            min-height: 90px; /* Min height for uniformity */
+            padding: 1.5rem; /* More internal padding */
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+        .component-interface {
+            width: 20px; /* Larger interface icons */
+            height: 20px;
+            border-width: 3px; /* Thicker border */
+            background-color: #ffffff;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .component-provided-interface {
+            border-radius: 50%;
+            border-color: #06D6A0; /* Green for provided */
+            right: -12px; /* Adjusted position */
+        }
+        .component-required-interface {
+            border-radius: 50%;
+            border-color: #FF6B6B; /* Red for required */
+            left: -12px; /* Adjusted position */
+            clip-path: polygon(0% 0%, 100% 0%, 100% 50%, 0% 50%); /* Half circle */
+            transform: translateY(-50%) rotate(180deg); /* Rotate for correct half-circle-orientation */
+        }
+        .comp-connection-line {
+            position: absolute;
+            height: 3px; /* Thicker line */
+        }
+        .comp-connection-arrow {
+            width: 0;
+            height: 0;
+            border-top: 6px solid transparent; /* Larger arrow */
+            border-bottom: 6px solid transparent;
+            border-left: 10px solid #4B5563; /* Larger arrow */
+            top: -4.5px;
+        }
+        .comp-connection-label {
+            font-size: 0.8rem; /* Slightly larger font */
+            padding: 0 5px;
+            top: -1.5rem; /* More clearance */
+        }
+
+        /* Deployment Diagram specific */
+        .deployment-diagram-example {
+            gap: 5rem; /* Increased vertical gap for more dynamic feel */
+            height: 600px; /* Adjusted height for more overall space, considering fewer nodes */
+            justify-content: center;
+            width: fit-content; /* Allow content to dictate width */
+            min-width: 100%; /* Ensure it takes at least 100% of parent width */
+        }
+        .deployment-node-box {
+            width: 250px; /* Fixed width for consistency, ensuring it fits */
+            padding: 2rem 2.5rem; /* Increased padding */
+            min-height: 100px; /* Ensure minimum height */
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+        .node-perspective-corner {
+            width: 30px; /* Larger corner */
+            height: 30px;
+            top: -15px;
+            left: -15px;
+        }
+        .deployment-artifact {
+            margin-top: 0.8rem; /* More spacing for artifacts */
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem; /* Slightly larger font */
+        }
+        .deploy-connection-line {
+            height: 100px; /* Significantly longer vertical lines for more spacing */
+            width: 3px; /* Thicker line */
+        }
+        .deploy-connection-arrow {
+            border-top: 10px solid transparent; /* Larger arrow */
+            border-bottom: 10px solid transparent;
+            border-left: 15px solid #118AB2; /* Larger arrow */
+            left: -6px; /* Centered on thicker line */
+            top: -8px; /* Centered on thicker line */
+        }
+        .deploy-connection-label {
+            font-size: 0.95rem; /* Larger font for clarity */
+            padding: 0 8px; /* More padding */
+            top: calc(50% - 30px); /* Adjusted top position for better clearance */
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <header class="text-center py-12 px-4 bg-white shadow-md">
+        <h1 class="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#118AB2] to-[#06D6A0]">Blueprint Your System Design Success</h1>
+        <p class="text-xl md:text-2xl mt-4 font-semibold text-[#073B4C]">A Visual Guide for Revising UML Diagrams</p>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="intro" class="text-center my-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                <div class="kpi-card p-6 rounded-lg shadow-md">
+                    <h2 class="text-6xl font-extrabold text-[#FF6B6B]">6</h2>
+                    <p class="text-xl font-semibold mt-2">Key Diagrams to Master</p>
+                </div>
+                <div class="md:col-span-2 text-left bg-white p-8 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 text-[#118AB2]">What is UML, and Why Should You Care?</h3>
+                    <p class="text-lg leading-relaxed">
+                        Think of UML (Unified Modeling Language) as the <strong>architect's blueprint for software</strong>. It's a standard visual language that helps you design, understand, and communicate complex systems. In a system design discussion, a quick UML sketch shows you're a systematic thinker who can communicate complex ideas clearly—a critical skill for any SDE.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="overview" class="my-16">
+             <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold">The UML Toolkit: Structural vs. Behavioral</h2>
+                <p class="text-lg mt-2 max-w-3xl mx-auto leading-relaxed">UML diagrams are split into two main categories. Structural diagrams are the 'nouns'—they describe what the system IS. Behavioral diagrams are the 'verbs'—they describe what the system DOES.</p>
+            </div>
+        </section>
+
+        <section id="structural" class="my-16">
+            <div class="text-center mb-12 p-6 bg-gradient-to-r from-cyan-50 to-blue-100 rounded-xl shadow-inner">
+                <h2 class="text-3xl font-bold text-[#073B4C]">Structural Diagrams: The System's Anatomy</h2>
+                 <p class="text-lg mt-2 max-w-3xl mx-auto leading-relaxed">These diagrams show the static parts of your system—the classes, components, and hardware that form its backbone.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                <div class="bg-white p-6 rounded-lg shadow-xl h-full flex flex-col">
+                    <h3 class="text-2xl font-bold text-center mb-4">Class Diagram: The Code's Blueprint 📝</h3>
+                    <p class="text-center mb-6 leading-relaxed">Essential for Low-Level Design, this diagram maps out your classes, their attributes, methods, and relationships. It's a direct reflection of your object-oriented design skills.</p>
+                    <div class="flex items-center justify-center p-4 flex-grow">
+                        <div class="flex flex-col items-center">
+                            <div class="uml-class">
+                                <div class="uml-class-name">User</div>
+                                <div class="uml-class-attributes">
+                                    <span class="uml-class-attribute-item">- userId: String</span>
+                                    <span class="uml-class-attribute-item">- email: String</span>
+                                </div>
+                                <div class="uml-class-methods">
+                                    <span class="uml-class-method-item">+ register(): void</span>
+                                    <span class="uml-class-method-item">+ login(): boolean</span>
+                                </div>
+                            </div>
+                            <div class="text-4xl text-gray-500 my-2">↓</div>
+                            <div class="flex items-center space-x-2">
+                                <div class="uml-class">
+                                    <div class="uml-class-name">Order</div>
+                                    <div class="uml-class-attributes">
+                                        <span class="uml-class-attribute-item">- orderId: String</span>
+                                        <span class="uml-class-attribute-item">- orderDate: Date</span>
+                                    </div>
+                                    <div class="uml-class-methods">
+                                        <span class="uml-class-method-item">+ addItem(): void</span>
+                                        <span class="uml-class-method-item">+ calculateTotal(): double</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">1 User places * Orders</p>
+                        </div>
+                    </div>
+                    <p class="text-center mt-4 text-sm font-medium text-gray-600 leading-relaxed">A class is composed of its name, attributes (data), and methods (actions). Relationships like association define how instances interact.</p>
+                    <h4 class="text-lg font-bold text-[#118AB2] mt-6">Real-life Usage Scenarios:</h4>
+                    <ul class="list-disc list-inside text-sm text-gray-700 mt-2 ml-4 space-y-1">
+                        <li><strong>Designing a social media platform:</strong> Model <code>User</code>, <code>Post</code>, <code>Comment</code> classes and their relationships.</li>
+                        <li><strong>Building an e-commerce system:</strong> Define <code>Product</code>, <code>Cart</code>, <code>Order</code>, and <code>Payment</code> classes.</li>
+                        <li><strong>Refactoring legacy code:</strong> Use class diagrams to understand existing code structure before making changes.</li>
+                    </ul>
+                </div>
+                 <div class="bg-white p-6 rounded-lg shadow-xl h-full flex flex-col">
+                    <h3 class="text-2xl font-bold text-center mb-4">Component Diagram: The Service Map 🧩</h3>
+                    <p class="text-center mb-6 leading-relaxed">Perfect for High-Level Design and microservices. It shows how your system is broken down into modular, reusable components and how they interact through APIs or interfaces.</p>
+                    <div class="flex flex-col items-center justify-center space-y-4 py-4 flex-grow">
+                        <div class="flex items-center space-x-8">
+                            <div class="flowchart-node">Order Service</div>
+                            <span class="text-gray-400 text-3xl">⟶</span>
+                            <div class="relative flowchart-node">Payment Service
+                                <div class="absolute -right-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-blue-500 border-2 border-white"></div>
+                            </div>
+                        </div>
+                        <div class="flex">
+                            <div class="text-3xl text-gray-400 transform -rotate-90 ml-12">↑</div>
+                            <div class="w-24"></div>
+                            <div class="text-3xl text-gray-400 transform rotate-90 mr-12">↓</div>
+                        </div>
+                        <div class="flex items-center space-x-8">
+                             <div class="relative flowchart-node">Inventory Service
+                                <div class="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-blue-500 rounded-full"></div>
+                            </div>
+                            <span class="text-gray-400 text-3xl">⟵</span>
+                            <div class="flowchart-node">Product Catalog</div>
+                        </div>
+                    </div>
+                    <p class="text-center mt-4 text-sm font-medium text-gray-600 leading-relaxed">Components communicate through defined interfaces. Lollipop (provided) and socket (required) notations show service contracts.</p>
+                    <h4 class="text-lg font-bold text-[#118AB2] mt-6">Real-life Usage Scenarios:</h4>
+                    <ul class="list-disc list-inside text-sm text-gray-700 mt-2 ml-4 space-y-1">
+                        <li><strong>Designing a microservices architecture:</strong> Map out independent services like User Service, Product Service, and Payment Gateway.</li>
+                        <li><strong>Understanding third-party integrations:</strong> Show how your system components interact with external APIs (e.g., a shipping API, a payment processor).</li>
+                        <li><strong>Planning module dependencies:</b> Identify which modules rely on others to manage build order or refactoring efforts.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-xl lg:col-span-2 flex flex-col">
+                    <h3 class="text-2xl font-bold text-center mb-4">Deployment Diagram: The Physical Layout 🌍</h3>
+                    <p class="text-center mb-6 leading-relaxed">This shows where your software actually lives. It maps software artifacts (like .jar files or databases) to physical hardware (like servers or mobile devices), which is crucial for discussing infrastructure and scalability.</p>
+                    <div class="flex flex-col items-center justify-center space-y-4 py-8 flex-grow">
+                        <div class="flex space-x-12 items-center">
+                            <div class="uml-node">
+                                <strong>Web Server</strong>
+                                <div class="uml-artifact">WebApp.war</div>
+                            </div>
+                            <div class="text-3xl text-gray-400">⟶</div>
+                            <div class="uml-node">
+                                <strong>App Server</strong>
+                                <div class="uml-artifact">AuthService.jar</div>
+                                <div class="uml-artifact">LogicModule.jar</div>
+                            </div>
+                        </div>
+                        <div class="text-3xl text-gray-400">↓</div>
+                        <div class="uml-node">
+                            <strong>Database Server</strong>
+                            <div class="uml-artifact">AppDB.sql</div>
+                        </div>
+                    </div>
+                    <p class="text-center mt-4 text-sm font-medium text-gray-600 leading-relaxed">Resource allocation across physical nodes is a key consideration for system performance.</p>
+                    <h4 class="text-lg font-bold text-[#118AB2] mt-6">Real-life Usage Scenarios:</h4>
+                    <ul class="list-disc list-inside text-sm text-gray-700 mt-2 ml-4 space-y-1">
+                        <li><strong>Cloud infrastructure planning:</strong> Illustrate how services are deployed across different cloud instances or regions.</li>
+                        <li><strong>DevOps and Release Management:</strong> Visualize the target environment for deployments and understand dependencies between physical resources.</li>
+                        <li><strong>Troubleshooting performance issues:</strong> Helps pinpoint which physical components might be bottlenecking a system.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="behavioral" class="my-16">
+            <div class="text-center mb-12 p-6 bg-gradient-to-r from-emerald-50 to-green-100 rounded-xl shadow-inner">
+                <h2 class="text-3xl font-bold text-[#073B4C]">Behavioral Diagrams: The System in Motion</h2>
+                <p class="text-lg mt-2 max-w-3xl mx-auto leading-relaxed">These diagrams capture the dynamic aspects of your system—how it behaves and interacts over time.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                 <div class="bg-white p-6 rounded-lg shadow-xl h-full flex flex-col">
+                    <h3 class="text-2xl font-bold text-center mb-4">Use Case Diagram: The "Who Does What?" Map 🗺️</h3>
+                    <p class="text-center mb-6 leading-relaxed">This provides a high-level view of your system's functionality from the user's perspective, defining the scope and functional requirements.</p>
+                    <div class="flex flex-col items-center justify-center p-4 flex-grow">
+                        <div class="flex space-x-8 items-start justify-center w-full">
+                            <div class="uml-actor">
+                                <div class="uml-actor-head"></div>
+                                <div class="uml-actor-body">
+                                    <div class="leg2 w-[20px] h-[2px] bottom-[-5px] right-[-9px] rotate-[-45deg] origin-bottom-right"></div>
+                                </div>
+                                User
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-2 h-16 bg-gray-300 my-2"></div>
+                                <div class="uml-use-case mb-4">Place Order</div>
+                                <div class="uml-use-case">Browse Products</div>
+                                <div class="w-2 h-16 bg-gray-300 my-2"></div>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="uml-actor">
+                                    <div class="uml-actor-head"></div>
+                                    <div class="uml-actor-body">
+                                        <div class="leg2 w-[20px] h-[2px] bottom-[-5px] right-[-9px] rotate-[-45deg] origin-bottom-right"></div>
+                                    </div>
+                                    Admin
+                                </div>
+                                <div class="w-2 h-16 bg-gray-300 my-2"></div>
+                                <div class="uml-use-case mb-4">Manage Inventory</div>
+                                <div class="w-2 h-16 bg-gray-300 my-2"></div>
+                            </div>
+                        </div>
+                        <div class="border border-blue-300 p-8 mt-8 rounded-lg shadow-inner text-center w-full">
+                            <strong>Online Shopping System</strong>
+                        </div>
+                    </div>
+                    <p class="text-center mt-4 text-sm font-medium text-gray-600 leading-relaxed">A use case defines interactions between external actors and the system to achieve a goal. The system boundary defines the scope.</p>
+                    <h4 class="text-lg font-bold text-[#118AB2] mt-6">Real-life Usage Scenarios:</h4>
+                    <ul class="list-disc list-inside text-sm text-gray-700 mt-2 ml-4 space-y-1">
+                        <li><strong>Gathering initial requirements:</strong> Understand what users need from a new system.</li>
+                        <li><strong>Defining system scope:</strong> Clearly outline what functionality will and won't be part of the system.</li>
+                        <li><strong>Communicating with non-technical stakeholders:</strong> Provide a simple, visual summary of what the system does.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-xl h-full flex flex-col">
+                    <h3 class="text-2xl font-bold text-center mb-4">Sequence Diagram: The Story of an Interaction 🗣️</h3>
+                    <p class="text-center mb-6 leading-relaxed">Tells the story of how objects communicate through messages in a time-ordered sequence. It's perfect for detailing a specific operation, like a user login flow.</p>
+                    <div class="flex justify-around items-start p-4 relative flex-grow" style="height: 350px;">
+                        <div class="uml-lifeline">
+                            <div class="uml-lifeline-box">User</div>
+                            <div class="uml-lifeline-dashed"></div>
+                        </div>
+                        <div class="uml-lifeline">
+                            <div class="uml-lifeline-box">LoginUI</div>
+                            <div class="uml-lifeline-dashed relative">
+                                <div class="uml-activation" style="top: 20px; height: 80px;"></div>
+                            </div>
+                        </div>
+                        <div class="uml-lifeline">
+                            <div class="uml-lifeline-box">AuthService</div>
+                            <div class="uml-lifeline-dashed relative">
+                                <div class="uml-activation" style="top: 50px; height: 50px;"></div>
+                            </div>
+                        </div>
+                        <div class="uml-lifeline">
+                            <div class="uml-lifeline-box">UserDB</div>
+                            <div class="uml-lifeline-dashed relative">
+                                <div class="uml-activation" style="top: 80px; height: 20px;"></div>
+                            </div>
+                        </div>
+
+                        <div class="absolute w-full" style="top: 40px; left: 10%;">
+                            <div class="relative" style="width: 25%;">
+                                <div class="uml-message"></div>
+                                <div class="uml-message-arrow"></div>
+                                <span class="absolute -top-6 text-sm text-gray-700">enterCredentials()</span>
+                            </div>
+                        </div>
+                        <div class="absolute w-full" style="top: 70px; left: 35%;">
+                            <div class="relative" style="width: 25%;">
+                                <div class="uml-message"></div>
+                                <div class="uml-message-arrow"></div>
+                                <span class="absolute -top-6 text-sm text-gray-700">authenticate()</span>
+                            </div>
+                        </div>
+                        <div class="absolute w-full" style="top: 100px; left: 60%;">
+                            <div class="relative" style="width: 25%;">
+                                <div class="uml-message"></div>
+                                <div class="uml-message-arrow"></div>
+                                <span class="absolute -top-6 text-sm text-gray-700">lookupUser()</span>
+                            </div>
+                        </div>
+                        <div class="absolute w-full" style="top: 130px; left: 60%;">
+                            <div class="relative" style="width: 25%; transform: scaleX(-1);">
+                                <div class="uml-message" style="background-color: #06D6A0;"></div>
+                                <div class="uml-message-arrow" style="border-left-color: #06D6A0;"></div>
+                                <span class="absolute -top-6 text-sm text-gray-700 right-0" style="transform: scaleX(-1);">userDetails()</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-center mt-4 text-sm font-medium text-gray-600 leading-relaxed">Latency at each step of an interaction is critical for user experience.</p>
+                    <h4 class="text-lg font-bold text-[#118AB2] mt-6">Real-life Usage Scenarios:</h4>
+                    <ul class="list-disc list-inside text-sm text-gray-700 mt-2 ml-4 space-y-1">
+                        <li><strong>Debugging a tricky bug:</strong> Trace the exact sequence of method calls to find where an error occurs.</li>
+                        <li><strong>Designing an API call flow:</strong> Illustrate the steps involved when a client consumes a complex API endpoint.</li>
+                        <li><strong>Understanding asynchronous operations:</strong> Show how messages are passed without waiting for an immediate response in distributed systems.</li>
+                    </ul>
+                </div>
+                 <div class="bg-white p-6 rounded-lg shadow-xl lg:col-span-2 flex flex-col">
+                    <h3 class="text-2xl font-bold text-center mb-4">Activity Diagram: The Workflow Visualizer 🔄</h3>
+                    <p class="text-center mb-6 leading-relaxed">An advanced flowchart that models complex business processes, workflows, or algorithms, clearly showing decision points, parallel actions, and the overall flow of control.</p>
+                    <div class="timeline max-w-2xl mx-auto mt-8 flex-grow">
+                        <div class="timeline-item">
+                            <div class="timeline-dot">1</div>
+                            <div class="timeline-content">
+                                <h3 class="text-xl font-bold">Order Placed</h3>
+                                <p class="text-gray-700 leading-normal">Customer confirms their cart and initiates the checkout process.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                             <div class="timeline-dot">2</div>
+                            <div class="timeline-content">
+                                <h3 class="text-xl font-bold">Payment Processed</h3>
+                                <p class="text-700 leading-normal">Payment gateway verifies and captures the payment. This is a critical decision point.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                             <div class="timeline-dot">3</div>
+                            <div class="timeline-content">
+                                <h3 class="text-xl font-bold">Items Shipped</h3>
+                                <p class="text-gray-700 leading-normal">Warehouse packages the items and hands them over to the courier. This often runs in parallel with invoicing.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                             <div class="timeline-dot">4</div>
+                            <div class="timeline-content">
+                                <h3 class="text-xl font-bold">Order Delivered</h3>
+                                <p class="text-gray-700 leading-normal">The workflow completes when the customer receives their package.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="text-lg font-bold text-[#118AB2] mt-6">Real-life Usage Scenarios:</h4>
+                    <ul class="list-disc list-inside text-sm text-gray-700 mt-2 ml-4 space-y-1">
+                        <li><strong>Mapping business processes:</strong> Documenting steps like "customer onboarding" or "complaint resolution."</li>
+                        <li><strong>Designing complex algorithms:</strong> Visualize conditional logic, loops, and parallel execution paths.</li>
+                        <li><strong>Identifying bottlenecks:</b> Analyze existing workflows to find inefficient steps or areas for optimization.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="tips" class="my-16 bg-white p-8 rounded-lg shadow-2xl">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#118AB2]">Mastering UML: Quick Tips!</h2>
+            <ul class="max-w-4xl mx-auto text-lg quick-tips-list">
+                <li><span class="text-green-500 text-2xl">✅</span> <p><strong>Start High-Level:</strong> Use a Component or Use Case diagram to show the big picture first.</p></li>
+                <li><span class="text-green-500 text-2xl">✅</span> <p><strong>Dive Deep on Demand:</strong> Use a Sequence or Class diagram to explain specific details when requested.</p></li>
+                <li><span class="text-green-500 text-2xl">✅</span> <p><strong>Explain As You Go:</strong> Narrate your design choices. "I'm using this relationship because..."</p></li>
+                <li><span class="text-green-500 text-2xl">✅</span> <p><strong>Keep It Simple:</strong> Clarity beats complexity. A clean, simple diagram is more effective than a cluttered one.</p></li>
+                <li><span class="text-green-500 text-2xl">✅</span> <p><strong>Focus on the "Why":</strong> Always connect your diagram back to solving the core problem.</p></li>
+            </ul>
+        </section>
+
+    </main>
+
+    <footer class="text-center p-8 bg-[#073B4C] text-white">
+        <p>Happy designing! Now go ace that interview. 🚀</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // The palette and wrapLabels function are no longer strictly needed
+            // as the interactive diagram section is removed, but keeping them
+            // here for potential future use or if other parts of the document
+            // were to use Chart.js, etc.
+            const palette = {
+                red: '#FF6B6B',
+                yellow: '#FFD166',
+                green: '#06D6A0',
+                blue: '#118AB2',
+                navy: '#073B4C',
+                lightBlue: 'rgba(17, 138, 178, 0.2)',
+                lightGreen: 'rgba(6, 214, 160, 0.2)',
+                lightYellow: 'rgba(255, 209, 102, 0.2)'
+            };
+
+            const defaultTooltipOptions = {
+                callbacks: {
+                    title: function(tooltipItems) {
+                        const item = tooltipItems[0];
+                        let label = item.chart.data.labels[item.dataIndex];
+                        if (Array.isArray(label)) {
+                            return label.join(' ');
+                        }
+                        return label;
+                    }
+                }
+            };
+            
+            function wrapLabels(labels, maxWidth) {
+                return labels.map(label => {
+                    if (label.length <= maxWidth) {
+                        return label;
+                    }
+                    const words = label.split(' ');
+                    const lines = [];
+                    let currentLine = '';
+                    words.forEach(word => {
+                        if ((currentLine + word).length > maxWidth) {
+                            lines.push(currentLine.trim());
+                            currentLine = '';
+                        }
+                        currentLine += word + ' ';
+                    });
+                    lines.push(currentLine.trim());
+                    return lines;
+                });
+            }
+
+            // The interactive diagram logic is now removed.
+            // const diagramButtons = document.querySelectorAll('.diagram-button');
+            // const diagramDisplayArea = document.getElementById('diagram-display-area');
+            // const diagramPlaceholder = document.getElementById('diagram-placeholder');
+            // const diagramsHtml = { ... }; // This object is no longer used.
+
+            // diagramButtons.forEach(button => {
+            //     button.addEventListener('click', () => {
+            //         const diagramType = button.dataset.diagram;
+            //         diagramButtons.forEach(btn => btn.classList.remove('active'));
+            //         button.classList.add('active');
+            //         diagramPlaceholder.classList.add('hidden');
+            //         diagramDisplayArea.classList.remove('hidden');
+            //         diagramDisplayArea.innerHTML = diagramsHtml[diagramType];
+            //     });
+            // });
+        });
+    </script>
+</body>
+</html>
